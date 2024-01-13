@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { ButtonHTMLAttributes, HtmlHTMLAttributes, useEffect, useState } from 'react';
 
 // Source: https://stackoverflow.com/questions/51503754/typescript-type-beforeinstallpromptevent
 interface BeforeInstallPromptEvent extends Event {
@@ -18,8 +18,9 @@ declare global {
   }
 }
 
-export const AddToHomeScreenButton = () => {
+export const AddToHomeScreenButton = (props: ButtonHTMLAttributes<HTMLButtonElement>) => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isInstalled, setIsInstalled] = useState<boolean | null>(null);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
@@ -41,14 +42,24 @@ export const AddToHomeScreenButton = () => {
     deferredPrompt?.prompt();
     // Wait for the user to respond to the prompt
     deferredPrompt?.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the A2HS prompt');
-      } else {
-        console.log('User dismissed the A2HS prompt');
-      }
-      setDeferredPrompt(null);
+      setIsInstalled(choiceResult.outcome === 'accepted');
     });
   };
 
-  return deferredPrompt ? <button onClick={handleClick}>Add to Home Screen</button> : null;
+  // If the app is already installed, don't show the button
+  if (isInstalled) {
+    return <p>The app is installed, please open it from your home screen</p>;
+  }
+
+  // If the user is using an unsupported browser, show a warning
+  if (!deferredPrompt) {
+    return <p>Please use Chrome or Safari to install this app</p>;
+  }
+
+  // Otherwise, show the button
+  return (
+    <button onClick={handleClick} {...props}>
+      Install app
+    </button>
+  );
 };

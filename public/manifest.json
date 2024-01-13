@@ -3,8 +3,8 @@
   "short_name": "Zap ⚡️",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#ffc857",
-  "background_color": "#ffc857",
+  "theme_color": "#f1d800",
+  "background_color": "#f1d800",
   "description": "Zap your friends ⚡️",
   "icons": [
     {

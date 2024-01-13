@@ -8,8 +8,9 @@ const notificationsSupported = () => 'Notification' in window && 'serviceWorker'
 export default function Notifications() {
   const [id, setId] = useState<string | null>(localStorage.getItem('subscriptionId') ?? null);
 
+  // If the user's browser doesn't support notifications, don't show anything
   if (!notificationsSupported()) {
-    return <h3>Please install the PWA first!</h3>;
+    return null;
   }
 
   if (!id) {
@@ -32,7 +33,7 @@ export default function Notifications() {
     <div>
       <h3>Zap</h3>
       <p>
-        Your ID is <code>{id}</code>
+        Your ID is <code>{id}</code>, you can send this to your friends so they can zap you!
       </p>
       <button onClick={unsubscribe}>Unsubscribe</button>
     </div>
@@ -96,7 +97,7 @@ const unsubscribe = async () => {
 
 const saveSubscription = async (subscription: PushSubscription) => {
   const ORIGIN = window.location.origin;
-  const BACKEND_URL = `${ORIGIN}/api/push`;
+  const BACKEND_URL = `${ORIGIN}/api/subscription`;
 
   const response = await fetch(BACKEND_URL, {
     method: 'POST',
