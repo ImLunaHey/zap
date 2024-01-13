@@ -1,11 +1,11 @@
 {
-  "name": "WebPush with Next.js",
-  "short_name": "WebPush",
+  "name": "Zap ⚡️",
+  "short_name": "Zap ⚡️",
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#B12A34",
-  "background_color": "#B12A34",
-  "description": "Example PWA with WebPush!",
+  "theme_color": "#ffc857",
+  "background_color": "#ffc857",
+  "description": "Zap your friends ⚡️",
   "icons": [
     {
       "src": "icons/icon-32.png",

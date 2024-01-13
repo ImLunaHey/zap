@@ -38,14 +38,14 @@ export async function GET() {
 
     for (const subscription of subscriptions) {
       const payload = JSON.stringify({
-        title: 'WebPush Notification!',
-        body: 'Hello World',
+        title: 'Zap ⚡️',
+        body: 'Someone wants your attention!',
       });
       webpush.sendNotification(subscription, payload);
     }
 
     return Response.json({
-      message: `${subscriptions.length} messages sent!`,
+      message: 'Push notifications sent!',
     });
   } catch (error) {
     if (!(error instanceof Error))

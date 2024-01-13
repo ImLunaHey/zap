@@ -1,11 +1,12 @@
 'use client';
 
 import { PUBLIC_KEY } from '@/config';
+import { useState } from 'react';
 
 const notificationsSupported = () => 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
 
 export default function Notifications() {
-  const id = localStorage.getItem('subscriptionId');
+  const [id, setId] = useState<string | null>(localStorage.getItem('subscriptionId') ?? null);
 
   if (!notificationsSupported()) {
     return <h3>Please install the PWA first!</h3>;
@@ -14,16 +15,25 @@ export default function Notifications() {
   if (!id) {
     return (
       <div>
-        <h3>WebPush PWA</h3>
-        <button onClick={subscribe}>Subscribe</button>
+        <h3>Zap</h3>
+        <button
+          onClick={async () => {
+            const subscriptionId = await subscribe();
+            setId(subscriptionId ?? null);
+          }}
+        >
+          Subscribe
+        </button>
       </div>
     );
   }
 
   return (
     <div>
-      <h3>WebPush PWA</h3>
-      <p>You are subscribed!</p>
+      <h3>Zap</h3>
+      <p>
+        Your ID is <code>{id}</code>
+      </p>
       <button onClick={unsubscribe}>Unsubscribe</button>
     </div>
   );
@@ -59,6 +69,8 @@ const subscribe = async () => {
     localStorage.setItem('subscriptionId', result.subscriptionId);
 
     alert('You are now subscribed to push notifications!');
+
+    return result.subscriptionId;
   } catch (err) {
     console.error('Error', err);
   }
