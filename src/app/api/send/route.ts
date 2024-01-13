@@ -20,9 +20,9 @@ export async function POST(request: Request) {
     const subscription = await getSubscription(subscriptionId);
     if (!subscription) throw new Error('No subscription was found!');
 
-    webpush.sendNotification(subscription, payload);
+    await webpush.sendNotification(subscription, payload);
 
-    return Response.json({ subscriptionId, message: 'Subscription saved!' });
+    return Response.json({ subscriptionId, message: 'Zap sent!' });
   } catch (error) {
     if (!(error instanceof Error))
       throw new Error('Unknown error', {
