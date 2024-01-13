@@ -31,12 +31,6 @@ export const AddToHomeScreenButton = () => {
 
     window.addEventListener('beforeinstallprompt', (e) => handleBeforeInstallPrompt(e));
 
-    setTimeout(() => {
-      if (deferredPrompt) {
-        alert('deferred prompt found');
-      }
-    }, 1000);
-
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
