@@ -32,13 +32,16 @@ const subscribe = async () => {
   const swRegistration = await registerServiceWorker();
   await window?.Notification.requestPermission();
 
+  alert('You are now subscribed to notifications locally!');
+
   try {
     const options = {
       applicationServerKey: PUBLIC_KEY,
       userVisibleOnly: true,
     };
+    alert('Requesting subscription with push manager');
     const subscription = await swRegistration.pushManager.subscribe(options);
-
+    alert('Saving subscription to server');
     const id = await saveSubscription(subscription);
 
     // Save their subscription ID locally so they can send it to friends
