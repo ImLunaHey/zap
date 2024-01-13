@@ -5,15 +5,27 @@ import { PUBLIC_KEY } from '@/config';
 const notificationsSupported = () => 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
 
 export default function Notifications() {
+  const id = localStorage.getItem('subscriptionId');
+
   if (!notificationsSupported()) {
     return <h3>Please install the PWA first!</h3>;
   }
 
+  if (!id) {
+    return (
+      <div>
+        <h3>WebPush PWA</h3>
+        <button onClick={subscribe}>Subscribe</button>
+      </div>
+    );
+  }
+
   return (
-    <>
+    <div>
       <h3>WebPush PWA</h3>
-      <button onClick={subscribe}>Ask permission and subscribe!</button>
-    </>
+      <p>You are subscribed!</p>
+      <button onClick={unsubscribe}>Unsubscribe</button>
+    </div>
   );
 }
 
@@ -32,24 +44,41 @@ const subscribe = async () => {
   const swRegistration = await registerServiceWorker();
   await window?.Notification.requestPermission();
 
-  alert('You are now subscribed to notifications locally!');
-
   try {
     const options = {
       applicationServerKey: PUBLIC_KEY,
       userVisibleOnly: true,
     };
-    alert('Requesting subscription with push manager');
     const subscription = await swRegistration.pushManager.subscribe(options);
-    alert('Saving subscription to server');
-    const id = await saveSubscription(subscription);
+    const result = await saveSubscription(subscription);
+
+    // If the subscription was unsuccessful, throw an error
+    if ('error' in result) throw new Error(result.error);
 
     // Save their subscription ID locally so they can send it to friends
-    localStorage.setItem('subscriptionId', id);
+    localStorage.setItem('subscriptionId', result.subscriptionId);
 
-    console.log({ subscription });
+    alert('You are now subscribed to push notifications!');
   } catch (err) {
     console.error('Error', err);
+  }
+};
+
+const unsubscribe = async () => {
+  await unregisterServiceWorkers();
+
+  const swRegistration = await registerServiceWorker();
+  const subscription = await swRegistration.pushManager.getSubscription();
+
+  if (!subscription) {
+    alert('You are not subscribed to push notifications!');
+    return;
+  }
+
+  const result = await subscription.unsubscribe();
+  if (result) {
+    localStorage.removeItem('subscriptionId');
+    alert('You are now unsubscribed from push notifications!');
   }
 };
 
@@ -64,5 +93,13 @@ const saveSubscription = async (subscription: PushSubscription) => {
     },
     body: JSON.stringify(subscription),
   });
-  return response.json();
+  return response.json() as Promise<
+    | {
+        subscriptionId: string;
+        message: string;
+      }
+    | {
+        error: string;
+      }
+  >;
 };

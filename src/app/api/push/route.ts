@@ -9,19 +9,26 @@ export async function POST(request: Request) {
   try {
     const subscription = (await request.json()) as PushSubscription | null;
 
-    console.log({ subscription });
-
     if (!subscription) {
       console.error('No subscription was provided!');
       return;
     }
 
-    await saveSubscription(subscription);
+    const subscriptionId = await saveSubscription(subscription);
 
-    return Response.json({ message: 'success' });
+    return Response.json({ subscriptionId, message: 'Subscription saved!' });
   } catch (error) {
-    console.error(error);
-    return Response.json({ message: 'error' });
+    if (!(error instanceof Error))
+      throw new Error('Unknown error', {
+        cause: error,
+      });
+
+    return Response.json({
+      error: {
+        message: error.message,
+        stack: error.stack,
+      },
+    });
   }
 }
 
@@ -41,7 +48,16 @@ export async function GET() {
       message: `${subscriptions.length} messages sent!`,
     });
   } catch (error) {
-    console.error(error);
-    return Response.json({ message: 'error' });
+    if (!(error instanceof Error))
+      throw new Error('Unknown error', {
+        cause: error,
+      });
+
+    return Response.json({
+      error: {
+        message: error.message,
+        stack: error.stack,
+      },
+    });
   }
 }
