@@ -3,9 +3,10 @@
 import { PUBLIC_KEY } from '@/config';
 import { useState } from 'react';
 
-const notificationsSupported = () => 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
+export const notificationsSupported = () =>
+  'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
 
-export default function Notifications() {
+export function Notifications() {
   const [id, setId] = useState<string | null>(localStorage.getItem('subscriptionId') ?? null);
 
   // If the user's browser doesn't support notifications, don't show anything

@@ -1,6 +1,6 @@
 'use server';
 
-import { getSubscription, getSubscriptions } from '@/app/redis';
+import { getSubscription } from '@/app/redis';
 import webpush from 'web-push';
 
 const payload = JSON.stringify({
@@ -20,7 +20,9 @@ export async function POST(request: Request) {
     const subscription = await getSubscription(subscriptionId);
     if (!subscription) throw new Error('No subscription was found!');
 
-    await webpush.sendNotification(subscription, payload);
+    const response = await webpush.sendNotification(subscription, payload);
+
+    console.log(response);
 
     return Response.json({ subscriptionId, message: 'Zap sent!' });
   } catch (error) {

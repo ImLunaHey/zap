@@ -1,5 +1,6 @@
 'use client';
-import { ButtonHTMLAttributes, HtmlHTMLAttributes, useEffect, useState } from 'react';
+import { ButtonHTMLAttributes, useEffect, useState } from 'react';
+import { Notifications, notificationsSupported } from './notifications';
 
 // Source: https://stackoverflow.com/questions/51503754/typescript-type-beforeinstallpromptevent
 interface BeforeInstallPromptEvent extends Event {
@@ -18,9 +19,8 @@ declare global {
   }
 }
 
-export const AddToHomeScreenButton = (props: ButtonHTMLAttributes<HTMLButtonElement>) => {
+export default function AddToHomeScreenButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstalled, setIsInstalled] = useState<boolean | null>(null);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
@@ -42,13 +42,13 @@ export const AddToHomeScreenButton = (props: ButtonHTMLAttributes<HTMLButtonElem
     deferredPrompt?.prompt();
     // Wait for the user to respond to the prompt
     deferredPrompt?.userChoice.then((choiceResult) => {
-      setIsInstalled(choiceResult.outcome === 'accepted');
+      localStorage.setItem('isInstalled', choiceResult.outcome === 'accepted' ? 'true' : 'false');
     });
   };
 
-  // If the app is already installed, don't show the button
-  if (isInstalled) {
-    return <p>The app is installed, please open it from your home screen</p>;
+  // If the app is already installed, show the enable notifications button
+  if (notificationsSupported()) {
+    return <Notifications />;
   }
 
   // If the user is using an unsupported browser, show a warning
@@ -62,4 +62,4 @@ export const AddToHomeScreenButton = (props: ButtonHTMLAttributes<HTMLButtonElem
       Install app
     </button>
   );
-};
+}

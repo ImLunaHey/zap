@@ -1,4 +1,5 @@
 {
+  "id": "https://zap.fish.lgbt/manifest.json",
   "name": "Zap ⚡️",
   "short_name": "Zap ⚡️",
   "start_url": "/",
@@ -16,6 +17,12 @@
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+zap",
+      "url": "/zap?id=%s"
     }
   ]
 }
