@@ -51,9 +51,17 @@ const registerServiceWorker = async () => {
 
 const subscribe = async () => {
   await unregisterServiceWorkers();
-
   const swRegistration = await registerServiceWorker();
-  await window?.Notification.requestPermission();
+  const permission = await window?.Notification.requestPermission();
+
+  // If the user denied permission, throw an error
+  if (permission !== 'granted') {
+    alert('You must grant permission to receive push notifications!');
+    return;
+  }
+
+  // If the user granted permission, set up push notifications
+  alert('Setting up push notifications...');
 
   try {
     const options = {
