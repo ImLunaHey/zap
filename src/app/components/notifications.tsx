@@ -3,15 +3,15 @@
 import { PUBLIC_KEY } from '@/config';
 import { useState } from 'react';
 
-export const notificationsSupported = () =>
-  'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
+// export const notificationsSupported = () =>
+//   'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
 
 export function Notifications() {
   const [id, setId] = useState<string | null>(localStorage.getItem('subscriptionId') ?? null);
 
   // If the user's browser doesn't support notifications, don't show anything
   if (!notificationsSupported()) {
-    return null;
+    return <p>{"This browser doesn't support notifications. Please use a different browser to install this app."}</p>;
   }
 
   if (!id) {
@@ -36,7 +36,14 @@ export function Notifications() {
       <p>
         Your ID is <code>{id}</code>, you can send this to your friends so they can zap you!
       </p>
-      <button onClick={unsubscribe}>Unsubscribe</button>
+      <button
+        onClick={() => {
+          unsubscribe();
+          setId(null);
+        }}
+      >
+        Unsubscribe
+      </button>
     </div>
   );
 }
@@ -79,21 +86,21 @@ const subscribe = async () => {
 };
 
 const unsubscribe = async () => {
+  // Remove old service worker
   await unregisterServiceWorkers();
 
+  // Register a new service worker
   const swRegistration = await registerServiceWorker();
   const subscription = await swRegistration.pushManager.getSubscription();
 
-  if (!subscription) {
-    alert('You are not subscribed to push notifications!');
-    return;
-  }
+  // Unsubscribe from push notifications
+  await subscription?.unsubscribe();
 
-  const result = await subscription.unsubscribe();
-  if (result) {
-    localStorage.removeItem('subscriptionId');
-    alert('You are now unsubscribed from push notifications!');
-  }
+  // Remove their subscription ID from localStorage
+  localStorage.removeItem('subscriptionId');
+
+  // Tell them they've been unsubscribed
+  alert('You are now unsubscribed from push notifications!');
 };
 
 const saveSubscription = async (subscription: PushSubscription) => {
