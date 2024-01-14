@@ -28,10 +28,16 @@ declare global {
 export default function AddToHomeScreenButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
   const isStandalone = useStandaloneMode();
   const deferredPrompt = useBeforeInstallPrompt();
-  const isLoading = useFakeLoading(100);
+  const isLoading = useFakeLoading(1_000);
   const isInstalled = useIsInstalled();
   const areNotificationsSupported = useAreNotificationsSupported();
 
+  // If the app is already installed, tell the user to open the app on their homescreen
+  if (isInstalled) {
+    return <p>Please open the app on your homescreen.</p>;
+  }
+
+  // Prevent an error showing while we check if this browser supports notifications and PWAs
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -39,11 +45,6 @@ export default function AddToHomeScreenButton(props: ButtonHTMLAttributes<HTMLBu
   // If the app is already installed, show the enable notifications button
   if (isStandalone) {
     return <Notifications />;
-  }
-
-  // If the app is already installed, tell the user to open the app on their homescreen
-  if (isInstalled) {
-    return <p>Please open the app on your homescreen.</p>;
   }
 
   // If this browser doesn't support notifications, tell the user to use a different browser
