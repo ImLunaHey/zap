@@ -1,9 +1,15 @@
 'use client';
-import { ButtonHTMLAttributes, useEffect, useState } from 'react';
+
+import { ButtonHTMLAttributes } from 'react';
 import { Notifications } from './notifications';
+import { useAreNotificationsSupported } from '../hooks/use-are-notifications-supported';
+import { useIsInstalled } from '../hooks/use-is-installed';
+import { useFakeLoading } from '../hooks/use-fake-loading';
+import { useBeforeInstallPrompt } from '../hooks/use-before-install-prompt';
+import { useStandaloneMode } from '../hooks/use-standalone-mode';
 
 // Source: https://stackoverflow.com/questions/51503754/typescript-type-beforeinstallpromptevent
-interface BeforeInstallPromptEvent extends Event {
+export interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
   readonly userChoice: Promise<{
     outcome: 'accepted' | 'dismissed';
@@ -18,89 +24,6 @@ declare global {
     beforeinstallprompt: BeforeInstallPromptEvent;
   }
 }
-
-/**
- * Custom hook to determine if a PWA is running in standalone mode.
- * @returns boolean indicating whether the PWA is in standalone mode.
- */
-const useStandaloneMode = (): boolean => {
-  const [isStandalone, setIsStandalone] = useState(false);
-
-  useEffect(() => {
-    const checkDisplayMode = () => {
-      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
-      setIsStandalone(isStandaloneMode);
-    };
-
-    // Check the display mode immediately and also on app visibility change
-    checkDisplayMode();
-    document.addEventListener('visibilitychange', checkDisplayMode);
-
-    // Cleanup the event listener when the component unmounts
-    return () => document.removeEventListener('visibilitychange', checkDisplayMode);
-  }, []);
-
-  return isStandalone;
-};
-
-/**
- * Custom hook to handle the beforeinstallprompt event.
- * @returns A tuple containing the deferred prompt and a function to trigger it.
- */
-const useBeforeInstallPrompt = (): BeforeInstallPromptEvent | null => {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
-      // Prevent the mini-infobar from appearing on mobile
-      e.preventDefault();
-      // Stash the event so it can be triggered later
-      setDeferredPrompt(e);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
-  }, []);
-
-  return deferredPrompt;
-};
-
-const useFakeLoading = (duration: number) => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => setIsLoading(false), duration);
-
-    return () => clearTimeout(timeout);
-  }, [duration]);
-
-  return isLoading;
-};
-
-const useIsInstalled = () => {
-  const [isInstalled, setIsInstalled] = useState(false);
-
-  useEffect(() => {
-    const isInstalled = localStorage.getItem('isInstalled') === 'true';
-    setIsInstalled(isInstalled);
-  }, []);
-
-  return isInstalled;
-};
-
-const useAreNotificationsSupported = () => {
-  const [areNotificationsSupported, setAreNotificationsSupported] = useState(false);
-
-  useEffect(() => {
-    const areNotificationsSupported = 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
-    setAreNotificationsSupported(areNotificationsSupported);
-  }, []);
-
-  return areNotificationsSupported;
-};
 
 export default function AddToHomeScreenButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
   const isStandalone = useStandaloneMode();
