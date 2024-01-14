@@ -2,9 +2,15 @@
 
 import { PUBLIC_KEY } from '@/config';
 import { useState } from 'react';
+import { useAreNotificationsSupported } from '../hooks/use-are-notifications-supported';
 
 export function Notifications() {
   const [id, setId] = useState<string | null>(localStorage.getItem('subscriptionId') ?? null);
+  const areNotificationsSupported = useAreNotificationsSupported();
+
+  if (!areNotificationsSupported) {
+    return <p>Notifications are not supported on this device.</p>;
+  }
 
   if (!id) {
     return (

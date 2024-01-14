@@ -30,7 +30,6 @@ export default function AddToHomeScreenButton(props: ButtonHTMLAttributes<HTMLBu
   const deferredPrompt = useBeforeInstallPrompt();
   const isLoading = useFakeLoading(1_000);
   const isInstalled = useIsInstalled();
-  const areNotificationsSupported = useAreNotificationsSupported();
 
   // If the app is already installed, show the enable notifications button
   if (isStandalone) {
@@ -45,11 +44,6 @@ export default function AddToHomeScreenButton(props: ButtonHTMLAttributes<HTMLBu
   // Prevent an error showing while we check if this browser supports notifications and PWAs
   if (isLoading) {
     return <p>Loading...</p>;
-  }
-
-  // If this browser doesn't support notifications, tell the user to use a different browser
-  if (!areNotificationsSupported) {
-    return <p>{"This browser doesn't support notifications. Please use a different browser to install this app."}</p>;
   }
 
   // If this browser doesn't support installing PWAs, tell the user to use a different browser
