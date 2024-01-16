@@ -52,7 +52,8 @@ export const unregisterServiceWorkers = async () => {
 };
 
 const registerServiceWorker = async () => {
-  return navigator.serviceWorker.register('/service.js');
+  navigator.serviceWorker.register('/service.js');
+  return navigator.serviceWorker.ready;
 };
 
 const subscribe = async () => {
