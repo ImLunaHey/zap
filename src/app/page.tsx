@@ -6,7 +6,7 @@ const AddToHomeScreenButton = dynamic(() => import('@/app/components/add-to-home
 
 export default function Home() {
   return (
-    <main className="flex p-24 ">
+    <main className="flex p-10 ">
       <AddToHomeScreenButton />
     </main>
   );
