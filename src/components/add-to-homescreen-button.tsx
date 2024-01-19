@@ -38,9 +38,9 @@ export default function AddToHomeScreenButton(props: ButtonHTMLAttributes<HTMLBu
   const isLoading = useFakeLoading(1_000);
   const isInstalled = useIsInstalled();
 
-  // If the app is already installed, show the enable notifications button
+  // If the app is already installed, show nothing
   if (isStandalone) {
-    return <Notifications />;
+    return null;
   }
 
   // If the app is already installed, tell the user to open the app on their homescreen

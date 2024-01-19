@@ -38,5 +38,18 @@ export const getSubscription = async (id: string) => {
   } as SubscriptionWithId;
 };
 
+export const addFriend = async (id: string, friendId: string) => {
+  await redis.sadd(`${id}/friends`, friendId);
+};
+
+export const getFriends = async (id: string) => {
+  const friends = (await redis.smembers(`${id}/friends`)) as string[];
+  return Promise.all(friends.map(getSubscription)).then((results) => results.filter(Boolean) as SubscriptionWithId[]);
+};
+
+export const deleteFriend = async (id: string, friendId: string) => {
+  await redis.srem(`${id}/friends`, friendId);
+};
+
 // Setup webpush
 webpush.setVapidDetails('https://github.com/imlunahey/zap', PUBLIC_KEY, PRIVATE_KEY);

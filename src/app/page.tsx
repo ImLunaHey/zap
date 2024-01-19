@@ -1,13 +1,9 @@
 import dynamic from 'next/dynamic';
 
-const AddToHomeScreenButton = dynamic(() => import('@/app/components/add-to-homescreen-button'), {
+const App = dynamic(() => import('@/components/app'), {
   ssr: false, // Make sure to render component client side to access window and Notification APIs
 });
 
 export default function Home() {
-  return (
-    <main className="flex p-10 ">
-      <AddToHomeScreenButton />
-    </main>
-  );
+  return <App />;
 }

@@ -1,12 +1,13 @@
 'use client';
 
 import { PUBLIC_KEY } from '@/config';
-import { useState } from 'react';
 import { useAreNotificationsSupported } from '../hooks/use-are-notifications-supported';
+import { useLocalStorage } from '@uidotdev/usehooks';
 
 export function Notifications() {
-  const [id, setId] = useState<string | null>(localStorage.getItem('subscriptionId') ?? null);
+  const [id, setId] = useLocalStorage<string | null>('subscriptionId', null);
   const areNotificationsSupported = useAreNotificationsSupported();
+  const [_isSetup, setIsSetup] = useLocalStorage('isSetup', false);
 
   if (!areNotificationsSupported) {
     return <p>Notifications are not supported on this device.</p>;
@@ -20,6 +21,7 @@ export function Notifications() {
           onClick={async () => {
             const subscriptionId = await subscribe();
             setId(subscriptionId ?? null);
+            setIsSetup(true);
           }}
         >
           Subscribe

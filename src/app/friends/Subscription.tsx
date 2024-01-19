@@ -1,5 +1,5 @@
 'use client';
-import { type SubscriptionWithId } from '../redis';
+import { type SubscriptionWithId } from '../../redis';
 
 export const Subscription = (subscription: SubscriptionWithId) => (
   <div key={subscription.id}>

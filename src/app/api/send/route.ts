@@ -1,6 +1,8 @@
 'use server';
 
-import { getSubscription } from '@/app/redis';
+import { handleErrors } from '@/handle-errors';
+import { HttpError } from '@/http-error';
+import { getSubscription } from '@/redis';
 import webpush from 'web-push';
 
 const payload = JSON.stringify({
@@ -9,33 +11,19 @@ const payload = JSON.stringify({
 });
 
 export async function POST(request: Request) {
-  try {
+  return handleErrors(async () => {
+    // Validate the request's body.
     const subscriptionId = await request
       .json()
       .then((data) => data as { id: string } | null)
       .then((data) => data?.id);
+    if (!subscriptionId) throw new HttpError('No subscription ID was provided!', 400);
 
-    if (!subscriptionId) throw new Error('No subscription ID was provided!');
-
+    // Get the subscription from Redis.
     const subscription = await getSubscription(subscriptionId);
-    if (!subscription) throw new Error('No subscription was found!');
+    if (!subscription) throw new HttpError('No subscription was found!', 404);
 
-    const response = await webpush.sendNotification(subscription, payload);
-
-    console.log(response);
-
-    return Response.json({ subscriptionId, message: 'Zap sent!' });
-  } catch (error) {
-    if (!(error instanceof Error))
-      throw new Error('Unknown error', {
-        cause: error,
-      });
-
-    return Response.json({
-      error: {
-        message: error.message,
-        stack: error.stack,
-      },
-    });
-  }
+    // Send the notification.
+    await webpush.sendNotification(subscription, payload);
+  })(request);
 }
