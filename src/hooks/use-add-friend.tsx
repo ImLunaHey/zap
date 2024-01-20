@@ -1,23 +1,36 @@
 import { QueryClient, UseMutationOptions, useMutation } from '@tanstack/react-query';
 
 const addFriend = async (id: string) => {
-  const response = await fetch('/api/friends', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      id,
-    }),
-  });
+  try {
+    console.info('Adding friend', id);
+    const response = await fetch('/api/friends', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id,
+      }),
+    });
 
-  // Something went wrong
-  if (!response.ok) {
-    throw new Error(await response.text());
+    console.info('Status code', response.status);
+
+    // Something went wrong
+    if (response.status >= 400) {
+      throw new Error(await response.text());
+    }
+
+    // Successfully added friend
+    if (response.status === 204) {
+      return null;
+    }
+
+    // Return the updated list of friends
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to add friend', error);
+    throw error;
   }
-
-  // Return the updated list of friends
-  return await response.json();
 };
 
 type Context = { id: string };
@@ -30,7 +43,10 @@ export const useAddFriend = (
     {
       ...options,
       mutationKey: ['addFriend'],
-      mutationFn: async ({ id }) => addFriend(id),
+      mutationFn: async ({ id }) => {
+        console.log('id', id);
+        return await addFriend(id);
+      },
     },
     queryClient,
   );

@@ -13,6 +13,10 @@ const sendNotification = async (id: string) => {
     }),
   });
 
+  if (response.status === 204) {
+    return null;
+  }
+
   return await response.json();
 };
 

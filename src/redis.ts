@@ -43,8 +43,7 @@ export const addFriend = async (id: string, friendId: string) => {
 };
 
 export const getFriends = async (id: string) => {
-  const friends = (await redis.smembers(`${id}/friends`)) as string[];
-  return Promise.all(friends.map(getSubscription)).then((results) => results.filter(Boolean) as SubscriptionWithId[]);
+  return (await redis.smembers(`${id}/friends`)) as string[];
 };
 
 export const deleteFriend = async (id: string, friendId: string) => {

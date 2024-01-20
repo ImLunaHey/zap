@@ -1,8 +1,10 @@
+import { cn } from '@/cn';
 import { ButtonHTMLAttributes } from 'react';
 
-export const Button = (props: ButtonHTMLAttributes<HTMLButtonElement>) => (
-  <button
-    className="border border-white bg-black text-white font-mono px-4 py-2 w-fit hover:bg-[#171717] active:scale-90"
-    {...props}
-  />
-);
+export const Button = ({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) => {
+  const baseStyles = 'border rounded px-2 active:scale-95';
+  const lightStyles = 'bg-white text-black border-[#e4e4e7] hover:bg-[#f1f1f3] hover:border-[#e4e4e7]';
+  const darkStyles =
+    'dark:bg-[#111214] dark:text-white dark:border-[#222327] hover:dark:bg-[#222327] hover:dark:border-[#111214]';
+  return <button className={cn(baseStyles, lightStyles, darkStyles, className)} {...props} />;
+};

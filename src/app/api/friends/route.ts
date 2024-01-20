@@ -33,6 +33,8 @@ export async function POST(request: Request) {
     const userId = cookies().get('subscriptionId')?.value;
     if (!userId) throw new Error('No user ID was provided!');
 
+    console.info(`Adding friend ${body.id} to user ${userId}`);
+
     // Save the subscription to Redis.
     await addFriend(userId, body.id);
   })(request);
