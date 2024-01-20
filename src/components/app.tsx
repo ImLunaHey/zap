@@ -7,9 +7,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Notifications } from './notifications';
 import { Button } from './button';
 import { Box } from './box';
-import { version } from '@/../package.json';
+import pkg from '@/../package.json';
 
 const queryClient = new QueryClient();
+
+const version = pkg.version;
 
 export default function App() {
   const isStandalone = useStandaloneMode();
@@ -48,9 +50,14 @@ export default function App() {
               className="flex flex-row gap-2 items-center"
             >
               {/* Refresh icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="h-4 w-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                className="h-4 w-4 stroke-[#000] dark:stroke-[#FFF]"
+              >
                 <path
-                  stroke="#FFF"
+                  stroke="currentColor"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
