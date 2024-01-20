@@ -1,10 +1,11 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
 import { useSendNotification } from '../../hooks/use-send-notification';
 
 export default function Page() {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
+  const searchPramas = useSearchParams();
+  const id = searchPramas.get('id');
   const sendNotification = useSendNotification({
     onSuccess: () => {
       alert('Zapped!');
