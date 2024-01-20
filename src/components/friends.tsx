@@ -42,7 +42,7 @@ export const Friends = () => {
 
         {friends?.map((friendId) => (
           <div key={friendId} className="flex flex-row gap-2">
-            <Box className="flex flex-row gap-2 p-4">{friendId}</Box>
+            <Box className="flex flex-row gap-2 p-4 flex-grow">{friendId}</Box>
 
             <Button
               onClick={() => {
@@ -83,7 +83,6 @@ export const Friends = () => {
               onClick={() => {
                 addFriend.mutate({ id: newFriendId });
               }}
-              className="w-full"
             >
               Add
             </Button>
@@ -91,7 +90,6 @@ export const Friends = () => {
               onClick={() => {
                 setShowAddFriend(false);
               }}
-              className="w-full"
             >
               Cancel
             </Button>
